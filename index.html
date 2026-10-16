@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
+
+  <meta name="theme-color" content="#071525">
+
+  <meta
+    name="description"
+    content="Airport Chief and Pilot Simulator — manage your airport and fly your aircraft."
+  >
+
+  <title>Airport Chief | Flight Simulator</title>
+
+  <!-- Our main stylesheet -->
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+  <!-- Main game container -->
+  <main id="game">
+
+    <!-- 3D graphics are rendered inside this container -->
+    <div id="game-world" aria-label="3D airport and flight simulation">
+      <div id="loading-screen">
+        <div class="loading-plane">✈</div>
+        <h1>AIRPORT CHIEF</h1>
+        <p>Preparing your airport...</p>
+        <div class="loading-track">
+          <div id="loading-progress"></div>
+        </div>
+        <p id="loading-status">Initializing game</p>
+      </div>
+    </div>
+
+    <!-- Top information panel -->
+    <header id="top-hud" class="hud-panel">
+      <div class="brand">
+        <span class="brand-icon">✈</span>
+        <div>
+          <strong>AIRPORT CHIEF</strong>
+          <small>PILOT SIMULATOR</small>
+        </div>
+      </div>
+
+      <div class="flight-stats">
+        <div>
+          <small>IAS</small>
+          <strong id="speed-value">0</strong>
+          <small>KM/H</small>
+        </div>
+
+        <div>
+          <small>ALTITUDE</small>
+          <strong id="altitude-value">0</strong>
+          <small>M</small>
+        </div>
+
+        <div>
+          <small>HEADING</small>
+          <strong id="heading-value">000°</strong>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main game messages -->
+    <section id="flight-message" aria-live="polite">
+      Welcome, Captain. Your aircraft is ready.
+    </section>
+
+    <!-- Flight mode controls -->
+    <nav id="game-menu" aria-label="Game modes">
+      <button id="pilot-mode" class="menu-button active">
+        ✈ Pilot
+      </button>
+
+      <button id="airport-mode" class="menu-button">
+        ▦ Airport Chief
+      </button>
+
+      <button id="map-mode" class="menu-button">
+        ◉ World Map
+      </button>
+    </nav>
+
+    <!-- Aircraft controls -->
+    <section id="flight-controls" aria-label="Flight controls">
+
+      <div id="steering-controls" class="control-group">
+        <button id="turn-left" class="flight-button">
+          ◀<small>LEFT</small>
+        </button>
+
+        <button id="pitch-up" class="flight-button">
+          ▲<small>PITCH UP</small>
+        </button>
+
+        <button id="pitch-down" class="flight-button">
+          ▼<small>PITCH DOWN</small>
+        </button>
+
+        <button id="turn-right" class="flight-button">
+          ▶<small>RIGHT</small>
+        </button>
+      </div>
+
+      <div id="system-controls" class="control-group">
+        <button id="engine-button" class="system-button">
+          ENGINE
+        </button>
+
+        <button id="gear-button" class="system-button">
+          GEAR DOWN
+        </button>
+
+        <button id="brake-button" class="system-button">
+          BRAKE
+        </button>
+
+        <button id="camera-button" class="system-button">
+          CAMERA
+        </button>
+      </div>
+
+      <div id="throttle-panel" class="hud-panel">
+        <label for="throttle">
+          THROTTLE <strong id="throttle-value">0%</strong>
+        </label>
+
+        <input
+          id="throttle"
+          type="range"
+          min="0"
+          max="100"
+          value="0"
+          step="1"
+        >
+      </div>
+    </section>
+
+    <!-- Flight map overlay -->
+    <aside id="navigation-panel" class="hud-panel hidden">
+      <div class="panel-heading">
+        <strong>FLIGHT NAVIGATION</strong>
+        <button id="close-map" aria-label="Close map">✕</button>
+      </div>
+
+      <div id="navigation-map">
+        <p>Navigation map will load here.</p>
+      </div>
+
+      <div class="navigation-data">
+        <span>DESTINATION</span>
+        <strong id="destination-value">Select Airport</strong>
+
+        <span>DISTANCE</span>
+        <strong id="distance-value">— km</strong>
+      </div>
+    </aside>
+
+    <!-- Airport management overlay -->
+    <aside id="management-panel" class="hud-panel hidden">
+      <div class="panel-heading">
+        <strong>AIRPORT MANAGEMENT</strong>
+        <button id="close-management" aria-label="Close management">✕</button>
+      </div>
+
+      <div class="management-stat">
+        <span>Airport balance</span>
+        <strong id="money-value">₹100,000</strong>
+      </div>
+
+      <div class="management-stat">
+        <span>Passengers today</span>
+        <strong id="passenger-value">0</strong>
+      </div>
+
+      <div class="management-stat">
+        <span>Aircraft owned</span>
+        <strong id="aircraft-count">1</strong>
+      </div>
+
+      <p class="panel-note">
+        Airport management systems will be connected in a later stage.
+      </p>
+    </aside>
+
+    <!-- Pause menu -->
+    <div id="pause-screen" class="overlay hidden">
+      <div class="dialog">
+        <h2>Flight Paused</h2>
+        <p>Your simulation is paused.</p>
+        <button id="resume-button" class="primary-button">
+          RESUME FLIGHT
+        </button>
+        <button id="reset-flight" class="secondary-button">
+          RESTART FLIGHT
+        </button>
+      </div>
+    </div>
+
+    <!-- Main action buttons -->
+    <footer id="bottom-bar">
+      <button id="pause-button">Ⅱ PAUSE</button>
+      <span id="aircraft-name">Training Aircraft</span>
+      <button id="settings-button">⚙ SETTINGS</button>
+    </footer>
+
+  </main>
+
+  <!-- Three.js will provide our 3D graphics -->
+  <script type="module" src="./src/main.js"></script>
+</body>
+  </html>
+  
