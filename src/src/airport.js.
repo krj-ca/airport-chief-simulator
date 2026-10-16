@@ -1,0 +1,591 @@
+
+/* =========================================
+   AIRPORT CHIEF & PILOT SIMULATOR
+   File 5: src/airport.js
+   Airport buildings and runway
+   ========================================= */
+
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+
+export function createAirport(scene) {
+  const airport = new THREE.Group();
+  airport.name = "InternationalAirport";
+  scene.add(airport);
+
+  const materials = {
+    grass: new THREE.MeshStandardMaterial({
+      color: 0x648b4d,
+      roughness: 1
+    }),
+    asphalt: new THREE.MeshStandardMaterial({
+      color: 0x30363d,
+      roughness: 0.95
+    }),
+    concrete: new THREE.MeshStandardMaterial({
+      color: 0x9ca5ad,
+      roughness: 0.9
+    }),
+    building: new THREE.MeshStandardMaterial({
+      color: 0xdce5eb,
+      roughness: 0.8
+    }),
+    roof: new THREE.MeshStandardMaterial({
+      color: 0x465769,
+      roughness: 0.85
+    }),
+    glass: new THREE.MeshStandardMaterial({
+      color: 0x3c9ebd,
+      metalness: 0.2,
+      roughness: 0.25
+    }),
+    white: new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.65
+    }),
+    yellow: new THREE.MeshStandardMaterial({
+      color: 0xffc928,
+      emissive: 0x3d2600
+    }),
+    redLight: new THREE.MeshStandardMaterial({
+      color: 0xff293f,
+      emissive: 0xff1020,
+      emissiveIntensity: 1.5
+    }),
+    greenLight: new THREE.MeshStandardMaterial({
+      color: 0x3cff94,
+      emissive: 0x087b36,
+      emissiveIntensity: 1
+    })
+  };
+
+  /* ---------- Reusable building helper ---------- */
+
+  function addBox(
+    name,
+    width,
+    height,
+    depth,
+    x,
+    y,
+    z,
+    material,
+    castShadow = true
+  ) {
+    const mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(width, height, depth),
+      material
+    );
+
+    mesh.name = name;
+    mesh.position.set(x, y + height / 2, z);
+    mesh.castShadow = castShadow;
+    mesh.receiveShadow = true;
+    airport.add(mesh);
+
+    return mesh;
+  }
+
+  function addCylinder(
+    name,
+    radiusTop,
+    radiusBottom,
+    height,
+    x,
+    y,
+    z,
+    material,
+    segments = 12
+  ) {
+    const mesh = new THREE.Mesh(
+      new THREE.CylinderGeometry(
+        radiusTop,
+        radiusBottom,
+        height,
+        segments
+      ),
+      material
+    );
+
+    mesh.name = name;
+    mesh.position.set(x, y + height / 2, z);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    airport.add(mesh);
+
+    return mesh;
+  }
+
+  /* ---------- Airport grass ---------- */
+
+  const grass = new THREE.Mesh(
+    new THREE.PlaneGeometry(1800, 1800),
+    materials.grass
+  );
+
+  grass.name = "AirportGrass";
+  grass.rotation.x = -Math.PI / 2;
+  grass.position.y = -0.05;
+  grass.receiveShadow = true;
+  airport.add(grass);
+
+  /* ---------- Main runway ---------- */
+
+  const runwayLength = 1000;
+  const runwayWidth = 54;
+
+  addBox(
+    "MainRunway",
+    runwayWidth,
+    0.18,
+    runwayLength,
+    0,
+    0,
+    0,
+    materials.asphalt,
+    false
+  );
+
+  // White runway centerline markings.
+  for (let z = -470; z <= 470; z += 32) {
+    addBox(
+      "RunwayCenterMarking",
+      0.8,
+      0.025,
+      15,
+      0,
+      0.105,
+      z,
+      materials.white,
+      false
+    );
+  }
+
+  // Runway threshold stripes at both ends.
+  for (const end of [-1, 1]) {
+    for (let i = -5; i <= 5; i++) {
+      addBox(
+        "RunwayThresholdMarking",
+        1.6,
+        0.03,
+        20,
+        i * 3.7,
+        0.11,
+        end * 450,
+        materials.white,
+        false
+      );
+    }
+
+    // Runway designation numbers.
+    const numberText = createTextSprite(
+      end === -1 ? "09" : "27",
+      "#ffffff",
+      64
+    );
+
+    numberText.position.set(0, 0.15, end * 410);
+    numberText.scale.set(13, 7, 1);
+    airport.add(numberText);
+  }
+
+  // Runway edge lights.
+  for (let z = -490; z <= 490; z += 25) {
+    for (const x of [-runwayWidth / 2 - 1.5, runwayWidth / 2 + 1.5]) {
+      const light = new THREE.Mesh(
+        new THREE.SphereGeometry(0.65, 8, 6),
+        materials.white
+      );
+
+      light.name = "RunwayEdgeLight";
+      light.position.set(x, 0.8, z);
+      airport.add(light);
+    }
+  }
+
+  /* ---------- Taxiways ---------- */
+
+  addBox(
+    "TaxiwayA",
+    22,
+    0.14,
+    360,
+    70,
+    0,
+    0,
+    materials.asphalt,
+    false
+  );
+
+  addBox(
+    "TaxiwayConnector",
+    115,
+    0.14,
+    22,
+    34,
+    0,
+    0,
+    materials.asphalt,
+    false
+  );
+
+  addBox(
+    "Apron",
+    220,
+    0.15,
+    160,
+    145,
+    0,
+    -30,
+    materials.concrete,
+    false
+  );
+
+  // Taxiway centerline.
+  for (let z = -165; z <= 165; z += 15) {
+    addBox(
+      "TaxiwayCenterline",
+      0.65,
+      0.025,
+      7,
+      70,
+      0.09,
+      z,
+      materials.yellow,
+      false
+    );
+  }
+
+  /* ---------- Passenger terminal ---------- */
+
+  addBox(
+    "TerminalMainBuilding",
+    150,
+    19,
+    34,
+    145,
+    0,
+    -145,
+    materials.building
+  );
+
+  addBox(
+    "TerminalRoof",
+    156,
+    2,
+    39,
+    145,
+    19,
+    -145,
+    materials.roof
+  );
+
+  // Glass facade facing the apron.
+  addBox(
+    "TerminalGlassFacade",
+    138,
+    11,
+    0.35,
+    145,
+    3,
+    -127.6,
+    materials.glass,
+    false
+  );
+
+  // Terminal entrance doors.
+  addBox(
+    "TerminalEntrance",
+    12,
+    8,
+    0.5,
+    145,
+    0,
+    -127.2,
+    materials.dark || materials.roof,
+    false
+  );
+
+  // Terminal wings.
+  addBox(
+    "TerminalEastWing",
+    40,
+    12,
+    26,
+    50,
+    0,
+    -145,
+    materials.building
+  );
+
+  addBox(
+    "TerminalWestWing",
+    40,
+    12,
+    26,
+    240,
+    0,
+    -145,
+    materials.building
+  );
+
+  // Gate sections and boarding bridges.
+  for (let i = 0; i < 5; i++) {
+    const x = 82 + i * 31;
+
+    addBox(
+      "GateBoardingBridge",
+      15,
+      3,
+      24,
+      x,
+      5,
+      -106,
+      materials.concrete
+    );
+
+    addBox(
+      "GateWindow",
+      12,
+      4,
+      0.3,
+      x,
+      7,
+      -105.6,
+      materials.glass,
+      false
+    );
+  }
+
+  /* ---------- Air traffic control tower ---------- */
+
+  const towerX = -100;
+  const towerZ = -180;
+
+  addBox(
+    "ControlTowerBase",
+    20,
+    34,
+    20,
+    towerX,
+    0,
+    towerZ,
+    materials.building
+  );
+
+  addBox(
+    "ControlTowerCabin",
+    32,
+    8,
+    32,
+    towerX,
+    34,
+    towerZ,
+    materials.glass
+  );
+
+  addBox(
+    "ControlTowerRoof",
+    35,
+    2,
+    35,
+    towerX,
+    42,
+    towerZ,
+    materials.roof
+  );
+
+  addCylinder(
+    "TowerAntenna",
+    0.4,
+    0.8,
+    12,
+    towerX,
+    44,
+    towerZ,
+    materials.roof
+  );
+
+  /* ---------- Aircraft hangars ---------- */
+
+  function createHangar(x, z, index) {
+    addBox(
+      `Hangar${index}Building`,
+      58,
+      20,
+      48,
+      x,
+      0,
+      z,
+      materials.building
+    );
+
+    addBox(
+      `Hangar${index}Roof`,
+      62,
+      2,
+      52,
+      x,
+      20,
+      z,
+      materials.roof
+    );
+
+    addBox(
+      `Hangar${index}Door`,
+      35,
+      15,
+      0.5,
+      x,
+      0,
+      z + 24.3,
+      materials.concrete,
+      false
+    );
+
+    addBox(
+      `Hangar${index}DoorWindow`,
+      30,
+      2,
+      0.25,
+      x,
+      12,
+      z + 24.6,
+      materials.glass,
+      false
+    );
+  }
+
+  createHangar(-200, -70, 1);
+  createHangar(-200, 10, 2);
+  createHangar(-200, 90, 3);
+
+  /* ---------- Airport service buildings ---------- */
+
+  addBox(
+    "FireStation",
+    42,
+    10,
+    28,
+    280,
+    0,
+    30,
+    materials.building
+  );
+
+  addBox(
+    "FireStationGarage",
+    20,
+    7,
+    0.5,
+    280,
+    0,
+    44.3,
+    materials.redLight,
+    false
+  );
+
+  addBox(
+    "AirportFuelDepot",
+    28,
+    9,
+    28,
+    310,
+    0,
+    100,
+    materials.roof
+  );
+
+  addBox(
+    "CargoTerminal",
+    65,
+    13,
+    42,
+    300,
+    0,
+    -90,
+    materials.building
+  );
+
+  /* ---------- Airport boundary markers ---------- */
+
+  for (let x = -400; x <= 400; x += 40) {
+    for (const z of [-350, 250]) {
+      addBox(
+        "BoundaryMarker",
+        1,
+        2,
+        1,
+        x,
+        0,
+        z,
+        materials.white,
+        false
+      );
+    }
+  }
+
+  /* ---------- Airport information ---------- */
+
+  airport.userData = {
+    name: "International Airport",
+    runwayLength,
+    runwayWidth,
+    runwayHeading: 90,
+    gates: 5,
+    taxiways: ["A"],
+    terminals: 1,
+    hangars: 3,
+    position: new THREE.Vector3(0, 0, 0)
+  };
+
+  airport.update = function () {
+    // Future airport operations can be updated here.
+  };
+
+  airport.dispose = function () {
+    airport.traverse((object) => {
+      if (object.isMesh) {
+        object.geometry.dispose();
+
+        // Materials are shared within this airport module.
+        // Dispose each shared material once below.
+      }
+    });
+
+    for (const material of Object.values(materials)) {
+      material.dispose();
+    }
+
+    scene.remove(airport);
+  };
+
+  return airport;
+}
+
+/* ---------- Text labels using canvas sprites ---------- */
+
+function createTextSprite(text, color = "#ffffff", fontSize = 48) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 128;
+
+  const context = canvas.getContext("2d");
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = color;
+  context.font = `bold ${fontSize}px Arial`;
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.fillText(text, 128, 64);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+
+  const material = new THREE.SpriteMaterial({
+    map: texture,
+    transparent: true,
+    depthWrite: false
+  });
+
+  return new THREE.Sprite(material);
+      }
