@@ -1,0 +1,945 @@
+
+/* =========================================
+   AIRPORT CHIEF & PILOT SIMULATOR
+   File 2: style.css
+   Responsive desktop and mobile game UI
+   ========================================= */
+
+:root {
+  color-scheme: dark;
+  --bg: #07111f;
+  --panel: rgba(8, 20, 36, 0.91);
+  --panel-light: rgba(20, 38, 58, 0.94);
+  --border: rgba(151, 190, 220, 0.25);
+  --text: #f2f7ff;
+  --muted: #9db0c5;
+  --cyan: #36d9ff;
+  --green: #54f0a0;
+  --orange: #ffbd59;
+  --red: #ff6878;
+  --radius: 14px;
+  --safe-gap: 10px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Main game and 3D world */
+
+#game {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 50% 35%, #183c59 0%, transparent 55%),
+    linear-gradient(180deg, #102b43, #07111f);
+}
+
+#game-world {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+#game-world canvas,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+#game-world canvas {
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* Loading screen */
+
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 24px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at center, #173d5a 0%, #0a1b2d 55%, #050b14 100%);
+}
+
+#loading-screen h1,
+#loading-screen h2 {
+  margin: 0;
+}
+
+#loading-screen h1 {
+  max-width: 650px;
+  font-size: clamp(25px, 6vw, 48px);
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+
+#loading-screen p {
+  max-width: 460px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.loading-bar {
+  width: min(300px, 75vw);
+  height: 7px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #23394d;
+}
+
+.loading-bar span {
+  display: block;
+  width: 45%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--cyan);
+  animation: loading 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes loading {
+  from { width: 12%; }
+  to { width: 100%; }
+}
+
+/* Shared panels */
+
+.panel,
+#navigation-map,
+#airport-management,
+#nav-panel,
+#management-panel {
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.panel h2,
+.panel h3,
+#navigation-map h2,
+#airport-management h2 {
+  margin-top: 0;
+}
+
+/* Heads-up display */
+
+#hud {
+  position: absolute;
+  top: var(--safe-gap);
+  left: var(--safe-gap);
+  right: var(--safe-gap);
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.hud-group,
+.hud-card,
+.hud-item,
+.hud-stat {
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: rgba(5, 15, 27, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.hud-group,
+.hud-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.hud-label,
+.hud-title,
+.hud-unit,
+.small-label {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+
+.hud-value,
+#speed,
+#altitude,
+#heading {
+  font-size: clamp(17px, 3vw, 25px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+.hud-value small,
+.hud-unit {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.hud-row {
+  display: flex;
+  gap: 7px;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 9px rgba(84, 240, 160, 0.6);
+}
+
+/* Flight messages */
+
+#flight-message {
+  position: absolute;
+  top: 90px;
+  left: 50%;
+  z-index: 12;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  padding: 10px 15px;
+  transform: translateX(-50%);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(4, 14, 26, 0.86);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Main menu and game mode selection */
+
+#main-menu,
+#menu,
+.menu-panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 30;
+  width: min(440px, calc(100% - 32px));
+  max-height: calc(100% - 36px);
+  padding: clamp(18px, 4vw, 28px);
+  overflow-y: auto;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: rgba(6, 17, 30, 0.95);
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(18px);
+}
+
+#main-menu h1,
+#menu h1,
+.menu-panel h1 {
+  margin: 0 0 10px;
+  font-size: clamp(25px, 6vw, 38px);
+  line-height: 1.1;
+  letter-spacing: -0.8px;
+}
+
+#main-menu p,
+#menu p,
+.menu-panel p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.menu-buttons,
+#menu-buttons,
+.mode-buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Buttons */
+
+.game-button,
+.menu-button,
+.control-button,
+.system-button,
+#btn-pilot,
+#btn-chief,
+#btn-map,
+#engine-button,
+#gear-button,
+#brake-button,
+#camera-button,
+#pause-button,
+#settings-button {
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: linear-gradient(180deg, #1b354d, #102238);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 750;
+  text-align: center;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    transform 100ms ease;
+  touch-action: manipulation;
+}
+
+.game-button:hover,
+.menu-button:hover,
+.control-button:hover,
+.system-button:hover {
+  border-color: rgba(54, 217, 255, 0.75);
+  background: linear-gradient(180deg, #244a65, #17324b);
+}
+
+.game-button:active,
+.menu-button:active,
+.control-button:active,
+.system-button:active {
+  transform: scale(0.97);
+}
+
+.primary-button,
+#btn-pilot {
+  border-color: rgba(54, 217, 255, 0.6);
+  background: linear-gradient(135deg, #087da5, #1450a1);
+}
+
+.success-button {
+  border-color: rgba(84, 240, 160, 0.45);
+  color: var(--green);
+}
+
+.warning-button {
+  border-color: rgba(255, 189, 89, 0.45);
+  color: var(--orange);
+}
+
+.danger-button {
+  border-color: rgba(255, 104, 120, 0.45);
+  color: var(--red);
+}
+
+/* Flight controls */
+
+#flight-controls,
+#controls,
+#touch-controls {
+  position: absolute;
+  right: var(--safe-gap);
+  bottom: 72px;
+  left: var(--safe-gap);
+  z-index: 15;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.control-cluster,
+#direction-controls,
+#pitch-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.control-button {
+  width: 54px;
+  min-width: 44px;
+  height: 54px;
+  padding: 5px;
+  border-radius: 15px;
+  background: rgba(5, 17, 30, 0.85);
+  font-size: 21px;
+  touch-action: none;
+}
+
+.control-button.active,
+.control-button:active {
+  border-color: var(--cyan);
+  background: rgba(9, 106, 142, 0.92);
+}
+
+.control-caption {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* Engine, landing gear, brakes, camera */
+
+#system-controls,
+#systems,
+.system-controls {
+  position: absolute;
+  top: 76px;
+  right: var(--safe-gap);
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: min(145px, 38vw);
+}
+
+.system-button {
+  min-height: 36px;
+  padding: 8px 9px;
+  background: rgba(5, 17, 30, 0.86);
+  font-size: 11px;
+}
+
+.system-button.on,
+.system-button.active {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+/* Throttle */
+
+#throttle-container,
+#throttle-panel,
+.throttle-panel {
+  position: absolute;
+  right: var(--safe-gap);
+  bottom: 145px;
+  z-index: 16;
+  width: min(190px, 45vw);
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: rgba(5, 17, 30, 0.88);
+  backdrop-filter: blur(8px);
+}
+
+.throttle-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+#throttle,
+#throttle-slider,
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--cyan);
+  cursor: pointer;
+}
+
+input[type="range"] {
+  min-height: 24px;
+  touch-action: pan-y;
+}
+
+/* Navigation map */
+
+#navigation-map,
+#nav-panel {
+  position: absolute;
+  top: 82px;
+  left: var(--safe-gap);
+  z-index: 20;
+  width: min(250px, 58vw);
+  padding: 13px;
+}
+
+#navigation-map h2,
+#nav-panel h2 {
+  margin-bottom: 9px;
+  font-size: 14px;
+}
+
+#map-canvas,
+#navigation-map canvas,
+.map-canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #0a2030;
+}
+
+.map-label {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* Airport management panel */
+
+#airport-management,
+#management-panel {
+  position: absolute;
+  top: 82px;
+  left: var(--safe-gap);
+  z-index: 21;
+  width: min(310px, calc(100% - 20px));
+  max-height: calc(100% - 110px);
+  padding: 16px;
+  overflow-y: auto;
+}
+
+#airport-management h2,
+#management-panel h2 {
+  margin-bottom: 14px;
+  font-size: 17px;
+}
+
+.management-stats,
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stat-card,
+.management-stat {
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(22, 43, 63, 0.75);
+}
+
+.stat-card .value,
+.management-stat .value,
+#money,
+#passengers,
+#aircraft-count {
+  display: block;
+  margin-top: 5px;
+  color: var(--green);
+  font-size: 19px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.stat-card .label,
+.management-stat .label {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.management-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 13px;
+}
+
+/* Pause and settings overlays */
+
+#pause-overlay,
+#pause-menu,
+#settings-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(2, 8, 15, 0.76);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.overlay-content,
+.pause-panel,
+.settings-panel {
+  width: min(390px, 100%);
+  max-height: 90dvh;
+  padding: 24px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--panel-light);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.45);
+}
+
+.overlay-content h2,
+.pause-panel h2,
+.settings-panel h2 {
+  margin-top: 0;
+  font-size: 25px;
+}
+
+.overlay-content button,
+.pause-panel button,
+.settings-panel button {
+  width: 100%;
+  margin-top: 9px;
+}
+
+/* Bottom bar */
+
+#bottom-bar,
+.bottom-bar {
+  position: absolute;
+  right: var(--safe-gap);
+  bottom: var(--safe-gap);
+  left: var(--safe-gap);
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 43px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(5, 15, 27, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+.bottom-bar button {
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.bottom-bar button:hover {
+  border-color: var(--border);
+  color: var(--text);
+}
+
+#settings-button {
+  min-height: 32px;
+  padding: 6px 10px;
+}
+
+/* Scrollbars */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #39556e transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #39556e;
+}
+
+/* Mobile phones */
+
+@media (max-width: 600px) {
+  :root {
+    --safe-gap: 7px;
+    --radius: 11px;
+  }
+
+  #hud {
+    gap: 5px;
+  }
+
+  .hud-group,
+  .hud-card,
+  .hud-item,
+  .hud-stat {
+    padding: 7px 8px;
+    border-radius: 9px;
+  }
+
+  .hud-label,
+  .hud-title,
+  .hud-unit,
+  .small-label {
+    font-size: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .hud-value,
+  #speed,
+  #altitude,
+  #heading {
+    font-size: 17px;
+  }
+
+  #flight-message {
+    top: 76px;
+    font-size: 11px;
+  }
+
+  #system-controls,
+  #systems,
+  .system-controls {
+    top: 126px;
+    width: 112px;
+  }
+
+  .system-button {
+    min-height: 33px;
+    padding: 7px 5px;
+    font-size: 10px;
+  }
+
+  #navigation-map,
+  #nav-panel {
+    top: 126px;
+    width: 115px;
+    padding: 8px;
+  }
+
+  #navigation-map h2,
+  #nav-panel h2 {
+    font-size: 11px;
+  }
+
+  #flight-controls,
+  #controls,
+  #touch-controls {
+    bottom: 62px;
+    gap: 5px;
+  }
+
+  .control-cluster,
+  #direction-controls,
+  #pitch-controls {
+    gap: 5px;
+  }
+
+  .control-button {
+    width: 45px;
+    min-width: 42px;
+    height: 48px;
+    border-radius: 12px;
+    font-size: 18px;
+  }
+
+  #throttle-container,
+  #throttle-panel,
+  .throttle-panel {
+    right: 7px;
+    bottom: 122px;
+    width: 125px;
+    padding: 8px;
+  }
+
+  .throttle-header {
+    font-size: 9px;
+  }
+
+  #airport-management,
+  #management-panel {
+    top: 125px;
+    width: min(260px, calc(100% - 14px));
+    max-height: calc(100% - 190px);
+    padding: 12px;
+  }
+
+  #airport-management h2,
+  #management-panel h2 {
+    font-size: 15px;
+  }
+
+  .stat-card,
+  .management-stat {
+    padding: 8px;
+  }
+
+  .stat-card .value,
+  .management-stat .value,
+  #money,
+  #passengers,
+  #aircraft-count {
+    font-size: 16px;
+  }
+
+  .bottom-bar {
+    min-height: 38px;
+    padding: 4px 6px;
+  }
+
+  .bottom-bar button {
+    padding: 5px 6px;
+    font-size: 10px;
+  }
+}
+
+/* Extra-small phones */
+
+@media (max-width: 360px) {
+  .hud-group,
+  .hud-card,
+  .hud-item,
+  .hud-stat {
+    padding: 6px;
+  }
+
+  .hud-value,
+  #speed,
+  #altitude,
+  #heading {
+    font-size: 15px;
+  }
+
+  .control-button {
+    width: 41px;
+    min-width: 39px;
+    height: 44px;
+  }
+
+  #throttle-container,
+  #throttle-panel,
+  .throttle-panel {
+    width: 110px;
+  }
+}
+
+/* Landscape phone layout */
+
+@media (max-height: 450px) and (orientation: landscape) {
+  #hud {
+    top: 5px;
+  }
+
+  #system-controls,
+  #systems,
+  .system-controls {
+    top: 62px;
+  }
+
+  #navigation-map,
+  #nav-panel {
+    top: 62px;
+    width: 105px;
+  }
+
+  #flight-controls,
+  #controls,
+  #touch-controls {
+    bottom: 48px;
+  }
+
+  .control-button {
+    width: 42px;
+    height: 42px;
+  }
+
+  #throttle-container,
+  #throttle-panel,
+  .throttle-panel {
+    bottom: 105px;
+  }
+
+  .bottom-bar {
+    bottom: 5px;
+    min-height: 35px;
+  }
+
+  #airport-management,
+  #management-panel {
+    top: 60px;
+    max-height: calc(100% - 100px);
+  }
+}
+
+/* Respect reduced-motion preferences */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  }
